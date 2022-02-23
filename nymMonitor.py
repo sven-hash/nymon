@@ -24,7 +24,6 @@ class NymMonitor:
             for node in nodes:
                 actualStatus = self.nymRest.getStatus(node.get('identityKey'))
                 saturation = self.nymRest.getStakeSaturation(node.get('identityKey'))
-                print(actualStatus)
 
                 if actualStatus != 'invalid':
 

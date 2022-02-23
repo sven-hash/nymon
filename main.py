@@ -18,7 +18,7 @@ def main(telegramToken):
     nymAPI = NymRest(BASE_URL_MIXNODE)
     bot = TelegramBot(telegramToken, db, nymAPI,BASE_URL_EXPLORER)
 
-    monitor = NymMonitor(db, nymAPI,bot,BASE_URL_EXPLORER, 10)
+    monitor = NymMonitor(db, nymAPI,bot,BASE_URL_EXPLORER, 60)
     threading.Thread(target=monitor.polling).start()
     bot.startBot()
 
