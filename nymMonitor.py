@@ -24,26 +24,32 @@ class NymMonitor:
             for node in nodes:
                 actualStatus = self.nymRest.getStatus(node.get('identityKey'))
                 saturation = self.nymRest.getStakeSaturation(node.get('identityKey'))
+                print(actualStatus)
 
-                if saturation.get('saturation') >= 0.8:
-                    msg = "⚠️ "
-                    usersByMixnode = self.db.getMixnodesUser(node.get('identityKey'))
-                    if saturation.get('saturation') >= 1:
-                        msg = "⛔ "
+                if actualStatus != 'invalid':
 
-                    msg += f'[{node.get("identityKey")[:5]}...{node.get("identityKey")[-4:]}]({self.explorerUrl}/network-components/mixnode/{node.get("identityKey")}) saturation to {round(saturation.get("saturation") * 100, 3)}%'
-                    for user in usersByMixnode:
-                        self.logger.debug(f'{node.get("identityKey")} saturation = {saturation.get("saturation")}')
-                        self.bot.send(user.get('userid'),msg)
+                    if saturation.get('saturation') >= 0.8:
+                        msg = "⚠️ "
+                        usersByMixnode = self.db.getMixnodesUser(node.get('identityKey'))
+                        if saturation.get('saturation') >= 1:
+                            msg = "⛔ "
 
-                if actualStatus != node.get('status'):
-                    usersByMixnode = self.db.getMixnodesUser(node.get('identityKey'))
+                        msg += f'[{node.get("identityKey")[:5]}...{node.get("identityKey")[-4:]}]({self.explorerUrl}/network-components/mixnode/{node.get("identityKey")}) saturation to {round(saturation.get("saturation") * 100, 3)}%'
+                        for user in usersByMixnode:
+                            self.logger.debug(f'{node.get("identityKey")} saturation = {saturation.get("saturation")}')
+                            self.bot.send(user.get('userid'),msg)
 
-                    for user in usersByMixnode:
-                        self.logger.debug(f'{node.get("identityKey")} changes to {actualStatus}')
-                        self.bot.send(user.get('userid'), f'📟 [{node.get("identityKey")[:5]}...{node.get("identityKey")[-4:]}]({self.explorerUrl}/network-components/mixnode/{node.get("identityKey")}) changes to {actualStatus}')
+                    if actualStatus != node.get('status'):
+                        usersByMixnode = self.db.getMixnodesUser(node.get('identityKey'))
 
-                    self.db.insertMixnode(node.get('identityKey'), actualStatus)
+                        for user in usersByMixnode:
+                            self.logger.debug(f'{node.get("identityKey")} changes to {actualStatus}')
+                            self.bot.send(user.get('userid'), f'📟 [{node.get("identityKey")[:5]}...{node.get("identityKey")[-4:]}]({self.explorerUrl}/network-components/mixnode/{node.get("identityKey")}) changes to {actualStatus}')
+
+                        self.db.insertMixnode(node.get('identityKey'), actualStatus)
+                else:
+                    self.db.deleteMixnode(node.get('identityKey'))
+
                 time.sleep(1)
 
             time.sleep(self.pollingTime)

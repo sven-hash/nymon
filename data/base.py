@@ -69,6 +69,18 @@ class BaseModel(Model):
         finally:
             self.close()
 
+    def deleteMixnode(self,identityKey):
+        logHandler = logging.getLogger('nym')
+        self.connect()
+
+        mixnodeFk = Mixnode.get(Mixnode.identityKey == identityKey)
+
+        logHandler.debug(f"Delete mixnode {identityKey}")
+        User.delete().where(User.mixnodeid == mixnodeFk).execute()
+        Mixnode.delete().where(Mixnode.id == mixnodeFk).execute()
+
+        self.close()
+
     def insertMixnode(self, identityKey, status):
         logHandler = logging.getLogger('nym')
         self.connect()
@@ -79,9 +91,7 @@ class BaseModel(Model):
                     conflict_target=[Mixnode.identityKey],
                     update={Mixnode.status: status,Mixnode.updated_on: datetime.now()}).execute()
         except IntegrityError as e:
-            print(e)
             logHandler.exception(e)
-            return 'error'
         finally:
             self.close()
 

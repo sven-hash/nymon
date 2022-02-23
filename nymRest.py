@@ -50,6 +50,9 @@ class NymRest:
         try:
             response = self.session.get(f"{self.baseUrl}/{idKey}/{endpoint}")
 
+            if response.status_code == 404:
+                return 'invalid'
+
             if response.ok:
                 if response.content == "mixnode bond not found":
                     return 'invalid'
