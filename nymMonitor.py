@@ -31,16 +31,19 @@ class NymMonitor:
 
                 if actualStatus != 'invalid' and actualStatus is not None:
 
-                    if saturation.get('saturation') >= 0.8:
-                        msg = "⚠️ "
-                        usersByMixnode = self.db.getMixnodesUser(node.get('identityKey'))
-                        if saturation.get('saturation') >= 1:
-                            msg = "⛔ "
+                    try:
+                        if saturation['saturation'] >= 0.8:
+                            msg = "⚠️ "
+                            usersByMixnode = self.db.getMixnodesUser(node.get('identityKey'))
+                            if saturation.get('saturation') >= 1:
+                                msg = "⛔ "
 
-                        msg += f'[{node.get("identityKey")[:5]}...{node.get("identityKey")[-4:]}]({self.explorerUrl}/network-components/mixnode/{node.get("identityKey")}) saturation to {round(saturation.get("saturation") * 100, 3)}%'
-                        for user in usersByMixnode:
-                            self.logger.debug(f'{node.get("identityKey")} saturation = {saturation.get("saturation")}')
-                            self.bot.send(user.get('userid'), msg)
+                            msg += f'[{node.get("identityKey")[:5]}...{node.get("identityKey")[-4:]}]({self.explorerUrl}/network-components/mixnode/{node.get("identityKey")}) saturation to {round(saturation.get("saturation") * 100, 3)}%'
+                            for user in usersByMixnode:
+                                self.logger.debug(f'{node.get("identityKey")} saturation = {saturation.get("saturation")}')
+                                self.bot.send(user.get('userid'), msg)
+                    except KeyError as e:
+                        self.logger.exception(e)
 
                     if actualStatus != node.get('status'):
                         usersByMixnode = self.db.getMixnodesUser(node.get('identityKey'))
