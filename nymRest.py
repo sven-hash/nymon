@@ -27,6 +27,8 @@ class NymRest:
                     return 'invalid'
                 else:
                     return data.get('status')
+            else:
+                return 'invalid'
 
         except requests.ConnectionError as e:
 
@@ -44,6 +46,8 @@ class NymRest:
 
                 data = response.json()
                 return data
+            else:
+                return 'invalid'
 
         except requests.ConnectionError as e:
 
@@ -62,6 +66,8 @@ class NymRest:
             if response.ok:
                 if response.content == "mixnode bond not found":
                     return 'invalid'
+            else:
+                return 'invalid'
 
                 data = response.json()
                 print(data)
@@ -86,6 +92,8 @@ class NymRest:
 
                 data = response.json()['count']
                 return data
+            else:
+                return 'invalid'
 
         except requests.ConnectionError as e:
 
