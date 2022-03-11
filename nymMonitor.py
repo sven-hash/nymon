@@ -17,7 +17,10 @@ class NymMonitor:
         self.logger = logging.getLogger('nym')
 
     def send(self, user, msg):
-        self.bot.send(int(user), text=msg)
+        try:
+            self.bot.send(int(user), text=msg)
+        except telegram.error.NetworkError as e:
+            self.logger.exception(f"NymMonitor {e}")
 
     def polling(self):
         self.logger.debug('Mixnode pooler start')

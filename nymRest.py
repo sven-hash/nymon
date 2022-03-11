@@ -1,5 +1,5 @@
 import logging
-
+import backoff
 import requests
 
 
@@ -14,6 +14,10 @@ class NymRest:
         logging.getLogger('backoff').setLevel(logging.INFO)
         self.logger = logging.getLogger('nym')
 
+        logging.getLogger('backoff').addHandler(logging.StreamHandler())
+        logging.getLogger('backoff').setLevel(logging.INFO)
+
+    @backoff.on_exception(backoff.expo, (requests.exceptions.ConnectionError, requests.exceptions.Timeout))
     def getStatus(self, idKey):
         endpoint = "status"
         try:
@@ -35,6 +39,7 @@ class NymRest:
             self.logger.exception(f"{e}")
             return None
 
+    @backoff.on_exception(backoff.expo, (requests.exceptions.ConnectionError, requests.exceptions.Timeout))
     def getStakeSaturation(self, idKey):
         endpoint = "stake-saturation"
         try:
@@ -54,6 +59,7 @@ class NymRest:
             self.logger.exception(f"{e}")
             return None
 
+    @backoff.on_exception(backoff.expo, (requests.exceptions.ConnectionError, requests.exceptions.Timeout))
     def getRewardEstimation(self, idKey):
         endpoint = "reward-estimation"
 
@@ -78,6 +84,7 @@ class NymRest:
             self.logger.exception(f"{e}")
             return None
 
+    @backoff.on_exception(backoff.expo, (requests.exceptions.ConnectionError, requests.exceptions.Timeout))
     def getGwCoreCount(self, idKey):
         endpoint = "core-status-count"
         try:
